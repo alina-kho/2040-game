@@ -3,13 +3,16 @@ const GRID_SIZE = 4;
 const CELL_SIZE = 20;
 const CELL_GAP = 2;
 
+// In this project I have been using private var inside of the classes. This is in order to make it impossible to modify these variables outside of the classes - hence to make working with code easier.
+
 export default class Grid {
+  #cells;
   constructor(gridElement) {
     //Setting JS variables to CSS variables
     gridElement.style.setProperty("--grid-size", GRID_SIZE);
     gridElement.style.setProperty("--cell-size", `${CELL_SIZE}vmin`);
     gridElement.style.setProperty("--cell-gap", `${CELL_GAP}vmin`);
-    this.cells = createCellElement(gridElement).map((cellElement, index) => {
+    this.#cells = createCellElement(gridElement).map((cellElement, index) => {
       return new Cell(
         cellElement,
         index % GRID_SIZE,
@@ -17,6 +20,14 @@ export default class Grid {
       );
     });
     console.log(this.cells);
+  }
+
+  get #emptyCells() {
+    return this.#cells.filter((cell) => cell.tile == null);
+  }
+  randomEmptyCell() {
+    const randomIndex = Math.floor(Math.random() * this.#emptyCells);
+    return this.#emptyCells[randomIndex];
   }
 }
 
@@ -33,9 +44,23 @@ function createCellElement(gridElement) {
 }
 
 class Cell {
+  #x;
+  #y;
+  #tile;
   constructor(cellElement, x, y) {
     this.cellElement = cellElement;
-    this.x = x;
-    this.y = y;
+    this.#x = x;
+    this.#y = y;
+  }
+
+  get tile() {
+    return this.#tile;
+  }
+
+  set tile(value) {
+    this.#tile = value;
+    if (value === null) return;
+    this.#tile.x = this.#x;
+    this.#tile.y = this.#y;
   }
 }
