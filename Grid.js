@@ -26,7 +26,7 @@ export default class Grid {
     return this.#cells.filter((cell) => cell.tile == null);
   }
   randomEmptyCell() {
-    const randomIndex = Math.floor(Math.random() * this.#emptyCells);
+    const randomIndex = Math.floor(Math.random() * this.#emptyCells.length);
     return this.#emptyCells[randomIndex];
   }
 }
@@ -43,14 +43,24 @@ function createCellElement(gridElement) {
   return cells;
 }
 
-class Cell {
+export class Cell {
+  #cellElement;
   #x;
   #y;
   #tile;
+
   constructor(cellElement, x, y) {
-    this.cellElement = cellElement;
+    this.#cellElement = cellElement;
     this.#x = x;
     this.#y = y;
+  }
+
+  get x() {
+    return this.#x;
+  }
+
+  get y() {
+    return this.#y;
   }
 
   get tile() {
@@ -59,7 +69,7 @@ class Cell {
 
   set tile(value) {
     this.#tile = value;
-    if (value === null) return;
+    if (value == null) return;
     this.#tile.x = this.#x;
     this.#tile.y = this.#y;
   }
