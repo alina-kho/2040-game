@@ -29,6 +29,14 @@ export default class Grid {
     const randomIndex = Math.floor(Math.random() * this.#emptyCells.length);
     return this.#emptyCells[randomIndex];
   }
+
+  get cellsByColumnm() {
+    return this.#cells.reduce((cellGrid, cell) => {
+      cellGrid[cell.x] = cellGrid[cell.x] || [];
+      cellGrid[cell.x][cell.y] = cell;
+      return cellGrid;
+    }, []);
+  }
 }
 
 //Creating a layout - instead of making 16 static HTML divs
@@ -55,6 +63,7 @@ export class Cell {
     this.#y = y;
   }
 
+  //These getters are used to access the private variables
   get x() {
     return this.#x;
   }
