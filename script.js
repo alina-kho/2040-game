@@ -41,14 +41,27 @@ function moveUp() {
   return slideTiles(grid.cellsByColumn);
 }
 
+function moveDown() {
+  return slideTiles(grid.cellsByColumn.map((column) => [...column].reverse()));
+}
+
+function moveRight() {
+  return slideTiles(grid.cellsByColumn);
+}
+
+function moveLeft() {
+  return slideTiles(grid.cellsByColumn);
+}
+
 function slideTiles(cells) {
   cells.forEach((group) => {
     for (let i = 1; i < group.length; i++) {
       const cell = group[i];
+      if (cell.tile == null) continue;
       let lastValidTile;
       for (let j = i - 1; j >= 0; j--) {
         const moveToCell = group[j];
-        if (!moveToCell.canAccept(cell, tile)) break;
+        if (!moveToCell.canAccept(cell.tile)) break;
         lastValidTile = moveToCell;
       }
       if (lastValidCell != null) {
