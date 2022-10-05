@@ -8,30 +8,57 @@ const grid = new Grid(gameBoard);
 grid.randomEmptyCell().tile = new Tile(gameBoard);
 grid.randomEmptyCell().tile = new Tile(gameBoard);
 setupInput();
-console.log(grid.cellsByColumnm);
 
 function setupInput() {
   // Once: true is added to remove the event listener, so the animation of tile layout change is played
   window.addEventListener("keydown", handleInput, { once: true });
 }
 
-function handleInput(e) {
-  console.log(e.key);
+async function handleInput(e) {
   switch (e.key) {
     case "ArrowUp":
-      moveUp();
+      if (!canMoveUp()) {
+        setupInput();
+        return;
+      }
+      await moveUp();
       break;
     case "ArrowDown":
-      moveDown();
+      if (!canMoveDown()) {
+        setupInput();
+        return;
+      }
+      await moveDown();
       break;
     case "ArrowLeft":
-      moveLeft();
+      if (!canMoveLeft()) {
+        setupInput();
+        return;
+      }
+      await moveLeft();
       break;
     case "ArrowRight":
-      moveRight();
+      if (!canMoveRight()) {
+        setupInput();
+        return;
+      }
+      await moveRight();
       break;
     default:
+      setupInput();
       break;
+  }
+
+  grid.cells.forEach((cell) => cell.mergeTiles());
+
+  const newTile = new Tile(gameBoard);
+  grid.randomEmptyCell().tile = newTile;
+
+  if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
+    newTile.waitForTransition(true).then(() => {
+      alert("No moves left");
+    });
+    return;
   }
 
   setupInput();
@@ -82,6 +109,9 @@ function slideTiles(cells) {
   );
 }
 
+// Created functions to check whether it is possible to move
+// Plus, to avoid creation of new cells in case movement is impossible
+
 function canMoveUp() {
   return canMove(grid.cellsByColumn);
 }
@@ -98,6 +128,7 @@ function canMoveRight() {
   return canMove(grid.cellsByRow.map((row) => [...row].reverse()));
 }
 
+// General function
 function canMove(cells) {
   return cells.some((group) => {
     return group.some((cell, index) => {
